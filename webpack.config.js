@@ -1,12 +1,11 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const autoprefixer = require('autoprefixer');
 
 module.exports={
-    entry: {
-        app: ['@babel/polyfill','./src/js/index.js']
-    },
-        
+    entry: './src/js/index.js',
     output:{
         path: path.resolve(__dirname, './dist'),
         filename: 'js/bundle.js'
@@ -17,6 +16,22 @@ module.exports={
     module:{
         rules:[
             {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                  loader: 'babel-loader',
+                }
+            },
+            {
+                test: /\.html$/,
+                use: [
+                  {
+                    loader: 'html-loader',
+                    options: { minimize: true }
+                  }
+                ]
+            },
+            {
                 test: /\.(sa|sc|c)ss$/,
                 use: [
                     MiniCssExtractPlugin.loader,
@@ -25,61 +40,20 @@ module.exports={
                 ]
             },
             {
-                test: /\.m?js$/,
-                exclude: /(node_modules|bower_components)/,
-                use: {
-                  loader: 'babel-loader',
-                  options: {
-                    presets: ['@babel/preset-env']
-                }
-            }
-            },
-            {
-                test: /\.(jpg|png|gif|jpeg)$/,
+                test: /\.(jpe?g|png|gif|svg|webp)$/i,
                 use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'img/',
-                            useRelativePath: true
-                        }
-                    }
+                  'file-loader?name=assets/[name].[ext]',
+                  'image-webpack-loader?bypassOnDebug'
                 ]
             },
             {
-                test: /\.(gif|png|jpeg|jpg|svg)$i/,
-                use: [
-                  'file-loader',
-                  {
-                    loader: 'image-webpack-loader',
-                        options: {
-                            mozjpeg: {
-                            progressive: true,
-                            quality: 65
-                            },
-                            // optipng.enabled: false will disable optipng
-                            optipng: {
-                            enabled: true,
-                            },
-                            pngquant: {
-                            quality: '65-90',
-                            speed: 4
-                            },
-                            gifsicle: {
-                            interlaced: false,
-                            },
-                            // the webp option will enable WEBP
-                            webp: {
-                            quality: 75
-                            }
-                        }
-                    },
-                ],
+                test: /\.(ttf|eot|woff2?|mp4|mp3|txt|xml|pdf)$/i,
+                use: 'file-loader?name=assets/[name].[ext]'
             }
         ]
     },
     plugins: [
+        new CleanWebpackPlugin(['dist/**/*.*']),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             title: 'simple base structure',
