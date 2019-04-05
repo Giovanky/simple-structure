@@ -56,7 +56,7 @@ module.exports={
         new CleanWebpackPlugin(['dist/**/*.*']),
         new HtmlWebpackPlugin({
             template: './src/index.html',
-            title: 'simple base structure',
+            title: 'pokedex',
             filename: 'index.html',
             meta: {
                 author: 'Giovanny Garzon'
